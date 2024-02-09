@@ -1,6 +1,7 @@
 const express = require('express')
 const dotenv = require('dotenv');
 const bodyParser = require("body-parser");
+const dbConnection = require('./db/connection');
 
 dotenv.config();
 
@@ -13,8 +14,10 @@ app.use(bodyParser.json())
 
 const port = process.env.PORT || 3000
 
-// simple route
+// Db connection
+dbConnection.run()
 
+// simple route
 app.get('/', (req, res) => res.send('Welcome to the Vending Machine'))
 
 // routers
