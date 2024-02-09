@@ -1,0 +1,28 @@
+{
+  "name": "vending-machine",
+  "version": "1.0.0",
+  "description": "API for a vending machine",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node .",
+    "dev": "nodemon ."
+
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/m0hamedafifi/vending-machine.git"
+  },
+  "author": "Mohamed Afify",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/m0hamedafifi/vending-machine/issues"
+  },
+  "homepage": "https://github.com/m0hamedafifi/vending-machine#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.3"
+  }
+}
