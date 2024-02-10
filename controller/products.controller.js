@@ -1,6 +1,10 @@
 const Product = require('../model/products.model');
 
 // ----------------------------------------------------------------
+//                        CRUD Operations
+// ----------------------------------------------------------------
+
+// ----------------------------------------------------------------
 // Create a new Product instance
 // ----------------------------------------------------------------
 exports.addNewProduct = async (req, res) => {
@@ -50,7 +54,7 @@ exports.addNewProduct = async (req, res) => {
 // ----------------------------------------------------------------
 exports.getAllProducts = async (req, res) => {
    try{
-    let data = await Product.find({}, { _id: 0, __v: 0 }).sort({ id: "asc" }); // get all records in the database
+    let data = await Product.find({}, { _id: 0, __v: 0 }).sort({ productId: "asc" }); // get all records in the database
     if (!data) {
       return res
         .status(404)

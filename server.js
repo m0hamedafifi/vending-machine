@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const bodyParser = require("body-parser");
 const dbConnection = require('./db/connection');
 const productRoute = require('./router/products.route');
+const userRoute = require('./router/users.route');
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ app.get('/', (req, res) => res.send('Welcome to the Vending Machine'))
 
 // routers
 app.use("/api", productRoute);
+app.use("/api", userRoute);
 
 // send back a 404 if no other route matches
 app.use((req, res) => {
