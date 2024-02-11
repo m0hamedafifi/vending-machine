@@ -1,6 +1,8 @@
 const User = require("../model/users.model");
 const util = require('../util/utility');
 const bcrypt = require("bcryptjs");
+const jwt = require('../Util/jwt.util');
+
 
 // ----------------------------------------------------------------
 //                        CRUD Operations
@@ -30,7 +32,7 @@ exports.addNewUser = async (req, res) => {
       password: req.body.password,
       createdOn: util.dateFormat(),
       //role
-      role: req.body.role,
+      role: req.body.role ? req.body.role : 'buyer',
     };
     // console.log(data);
 
@@ -44,7 +46,12 @@ exports.addNewUser = async (req, res) => {
 
     let dataUser = await newUser.save();
 
-    return res.status(201).send({
+    // generate the token for authentication
+    let token = jwt.generateToken(dataUser.userId,dataUser.userName,dataUser.role);
+        
+    // send response to client side
+
+    return res.header('x-auth-token', token).status(201).send({
       status: true,
       message: `user : ${newUser.userName} has been added successfully!`,
       results: dataUser,

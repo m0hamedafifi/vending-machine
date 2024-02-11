@@ -20,7 +20,7 @@ exports.addNewProduct = async (req, res) => {
         productName: req.body.productName,
         amountAvailable: req.body.amountAvailable,
         cost: req.body.cost,
-        sellerId: req.body.sellerId,
+        sellerId: req.body.userId,
         productId: req.body.productId,
       };
       
