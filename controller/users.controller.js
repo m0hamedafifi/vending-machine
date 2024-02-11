@@ -1,8 +1,7 @@
 const User = require("../model/users.model");
-const util = require('../util/utility');
+const util = require("../util/utility");
 const bcrypt = require("bcryptjs");
-const jwt = require('../Util/jwt.util');
-
+const jwt = require("../Util/jwt.util");
 
 // ----------------------------------------------------------------
 //                        CRUD Operations
@@ -17,7 +16,7 @@ exports.addNewUser = async (req, res) => {
     // get the latest id of the user from the users collection and increment it by one to create a unique id for the new user
     let lastIdUser = await User.findOne().sort({ userId: "desc" }).exec();
     if (!lastIdUser) lastIdUser = 1;
-    else lastIdUser = Number(lastIdUser.userId) + 1;
+    else lastIdUser = lastIdUser.userId + 1;
     req.body.userId = lastIdUser;
 
     // encrypt password and update request body with encrypted password
@@ -32,9 +31,9 @@ exports.addNewUser = async (req, res) => {
       password: req.body.password,
       createdOn: util.dateFormat(),
       //role
-      role: req.body.role ? req.body.role : 'buyer',
+      role: req.body.role ? req.body.role : "buyer",
     };
-    // console.log(data);
+    console.log(data);
 
     // check username is already exist or not already
     const userExistOrNot = await User.findOne({ userName: data.userName });
@@ -47,15 +46,22 @@ exports.addNewUser = async (req, res) => {
     let dataUser = await newUser.save();
 
     // generate the token for authentication
-    let token = jwt.generateToken(dataUser.userId,dataUser.userName,dataUser.role);
-        
+    let token = jwt.generateToken(
+      dataUser.userId,
+      dataUser.userName,
+      dataUser.role
+    );
+
     // send response to client side
 
-    return res.header('x-auth-token', token).status(201).send({
-      status: true,
-      message: `user : ${newUser.userName} has been added successfully!`,
-      results: dataUser,
-    });
+    return res
+      .header("x-auth-token", token)
+      .status(201)
+      .send({
+        status: true,
+        message: `user : ${newUser.userName} has been added successfully!`,
+        results: dataUser,
+      });
   } catch (err) {
     console.log("Error at new  user creation", err.message);
     return res.status(500).send({
@@ -158,7 +164,6 @@ exports.updateUserInfo = async function (req, res) {
   try {
     const id = req.params.id;
     const updateOps = req.body;
-
     if (!updateOps) {
       return res
         .status(400)
@@ -168,13 +173,19 @@ exports.updateUserInfo = async function (req, res) {
     if (updateOps.password) {
       updateOps.password = bcrypt.hashSync(updateOps.password, 10);
     }
-
-    // Check if the user exists or not
-    var user = await User.findOneAndUpdate(
-      { $or: [{ userId: id }, { userName: id }] },
-      updateOps,
-      { new: true }
-    );
+    let user = "";
+    // check if  id is number or string
+    if (!isNaN(id)) {
+      // Check if the user exists or not
+      user = await User.findOneAndUpdate({ userId: id }, updateOps, {
+        new: true,
+      });
+    } else {
+      user = await User.findOneAndUpdate({ userName: id }, updateOps, {
+        new: true,
+      });
+    }
+    // console.log(user);
     if (!user)
       return res
         .status(404)
@@ -197,11 +208,22 @@ exports.updateUserInfo = async function (req, res) {
 exports.deleteUser = async function (req, res) {
   try {
     const id = req.params.id;
-    let user = await User.findOneAndDelete({
-      $or: [{ userId: id }, { userName: id }],
-    });
+    let user = "";
+    // check if  id is number or string
+    if (!isNaN(id)) {
+      // remove by userName
+      user = await User.findOneAndDelete({
+        userId: id,
+      });
+    } else {
+      // remove by user
+      user = await User.findOneAndDelete({ userName: id });
+    }
+
     if (!user)
-      return res.status(404).send({ status: false, message: "User Not Found!" });
+      return res
+        .status(404)
+        .send({ status: false, message: "User Not Found!" });
 
     // Send success response
     res.status(200).send({ status: true, message: "User has been deleted!" });

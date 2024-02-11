@@ -29,11 +29,28 @@ exports.validRegData = async (req, res, next) => {
       });
     }
 
-    // Validating the role field
-    if (!validator.isRoleExists(role.toLowerCase())) {
-      return res.status(400).send({
+    // check role type
+    if (typeof role === "string") {
+      // Validating the role field
+      if (!validator.isRoleExists(role.toLowerCase())) {
+        return res.status(400).send({
+          status: false,
+          message: "This role does not exist",
+        });
+      }
+    } else if (typeof role === "object") {
+      for (let item of role) {
+        if (!validator.isRoleExists(item.toLowerCase())) {
+          return res.status(400).send({
+            status: false,
+            message: "One or more roles provided do not exists.",
+          });
+        }
+      }
+    } else if (typeof role !== "undefined") {
+      return res.status(422).jsonp({
         status: false,
-        message: "This role does not exist",
+        message: "Invalid data sent to the server.",
       });
     }
 
@@ -84,7 +101,7 @@ exports.checkDepositData = async (req, res, next) => {
     }
 
     // Checking role of user who is making a deposit
-    if (!["buyer"].includes(role.toLowerCase())) {
+    if (!role.includes("buyer")) {
       return res.status(403).send({
         status: false,
         message: "You are not authorized to make this request",
@@ -99,5 +116,23 @@ exports.checkDepositData = async (req, res, next) => {
       status: false,
       message: "Internal Server Error..!",
     });
+  }
+};
+
+// it's same user or not
+exports.checkUser = async (req, res, next) => {
+  try {
+    id = req.params.id;
+    if (!(id == req.body.userId || id == req.body.userName)) {
+      return res
+        .status(404)
+        .send({ status: false, message: "Unauthorized Access...!" });
+    }
+    next();
+  } catch (err) {
+    console.log("Error in checking User Data", err);
+    return res
+      .status(500)
+      .send({ status: false, message: "Internal server error..." });
   }
 };

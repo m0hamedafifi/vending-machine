@@ -4,9 +4,10 @@ const usersController = require("../controller/users.controller");
 const loginController = require('../controller/login.controller');
 // Middleware 
 const authMW  = require('../middleware/authMWToken');
+const validUserData = require('../middleware/validateUserDataMW');
 
 // Create a new user
-router.post("/users/add", usersController.addNewUser);
+router.post("/users/add", validUserData.validRegData,usersController.addNewUser);
 
 // login with username and password
 router.post("/users/login", loginController.signInWithUsernamePassword);
@@ -18,9 +19,9 @@ router.get("/users", usersController.getAllUsersList);
 router.get("/users/:id", usersController.getUserDetailsById);
 
 // Update existing user
-router.put("/users/:id",authMW.authenticateUser, usersController.updateUserInfo);
+router.put("/users/:id",authMW.authenticateUser, validUserData.checkUser,usersController.updateUserInfo);
 
 // Delete user
-router.delete("/users/:id",authMW.authenticateUser, usersController.deleteUser);
+router.delete("/users/:id",authMW.authenticateUser,validUserData.checkUser, usersController.deleteUser);
 
 module.exports = router;

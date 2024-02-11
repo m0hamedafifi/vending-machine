@@ -42,6 +42,8 @@ exports.isValidUserName = (userName) => {
 };
 
 
+
+
 // check Role name 
 exports.isRoleExists = (roleName) => {
   const roles = ['seller', 'buyer'];
