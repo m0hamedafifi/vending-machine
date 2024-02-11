@@ -23,13 +23,6 @@ exports.addNewProduct = async (req, res) => {
         sellerId: req.body.userId,
         productId: req.body.productId,
       };
-      
-      // Check if the user has provided all required fields
-    if (!obj.productName || !obj.amountAvailable || !obj.cost || !obj.sellerId ) {
-        return res
-          .status(400)
-          .send({ status: false, message: "Please fill out all fields!" });
-      }
 
     // create a new product using our model
     let newProduct = new Product(obj); 
@@ -40,7 +33,7 @@ exports.addNewProduct = async (req, res) => {
     // send back the response with success message and the created product
     return res.status(201).send({
         status: true,
-        message: "product added Successfully",
+        message: "product added Successfully with id '" + data.productId + "'",
         results: data,
       });
       } catch (err) {

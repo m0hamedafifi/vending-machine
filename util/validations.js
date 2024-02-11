@@ -59,3 +59,4 @@ exports.isValidDeposit= (amount) => {
 exports.checkIsNumber=(data)=>{
   return isNaN(data);
 }
+
