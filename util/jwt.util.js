@@ -12,7 +12,7 @@ exports.generateToken = (userId,userName,role)=>{
 }
 
 //------------------------------------------------------------------------------
-// generate the access token for a user with specific role and expiration time
+// verify the access token for a user with specific role and expiration time
 //------------------------------------------------------------------------------
 exports.VerifyTokenUser = (token)=>{
     try{

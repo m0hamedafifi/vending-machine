@@ -100,18 +100,18 @@ exports.updateProduct = async (req, res) => {
   try {
     let data = await Product.findOneAndUpdate({ productId: id }, { $set: updateOps });
     if (!data) {
-      return res.status(400).json({
+      return res.status(400).send({
         status: false,
         message: "Operation failed!",
       }); 
     }
-    return res.status(200).json({
+    return res.status(200).send({
       status: true,
       message: "Product has been updated successfully",
     });
   } catch (err) {
     console.log("Error at update product : ",err.message);
-    return res.status(400).json({
+    return res.status(400).send({
       status: false,
       message: `Error updating product: ${err}`,
     });
