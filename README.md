@@ -56,7 +56,51 @@ JWT_SECRET = 'secret' * 8
 # Log folder
 Log_file = ./log
 ```
-same as above and this is screen Shot to make sure that the right configuration file has been chosen :
-![image](https://user-images.githubusercontent.com/54658855/117768622-aabdff80-b13c-11eb-8fcb-e9efbbdafd66.png)
-![ScreenShot](https://github.com/MohammadAlrefaieh/VendingMachineBackEnd/blob/master/Screenshot%20from%202021-06-24%2015-54
+same as above and this is a Shot to make sure that the right configuration file has been chosen :
 
+
+![ScreenShot](https://github.com/m0hamedafifi/vending-machine/blob/master/img/code.env.png)
+
+
+<br><br>
+
+##### Now you can start the server by running one of these commands in the terminal :
+<br>
+- For starting the development server (nodemon):
+<br>
+
+```yaml
+npm run dev
+```
+<br>
+- Or just simply start it with node:
+<br>
+
+```yaml
+npm start
+```
+<br>
+- Open your postman and go to `http://localhost:${PORT}/`  , you should see Welcome to the Vending Machine .
+
+<br>
+
+##### Testing
+To test the API, I used supertest which is a library for testing HTTP servers and middleware functions in Node.js. It emulates HTTP requests made by a client to an Express application
+To test the application, I used Mocha & Chai for testing purposes. You can use the following command to run tests:
+You can test all endpoints using [Postman](https://www.postman.com/) or any other API testing tool.<br>
+Make sure to add a header "x-auth-token" with the value of `<b>Bearer ${your jwt token}</b>` which you will get after login.
+<br>
+or use my Script to run tests for some end points:
+<br>
+
+```yaml
+npm run test
+```
+<br>
+Here are some useful links for testing each endpoint: <br>
+
+- Products
+[GET /products]() - Get All Products <br>
+[POST /product/add ]() - Add A New Product  <br>
+[PUT /product/:id]() - Edit An Existing Product <br>
+[DELETE /product/:id]() - Delete A Product By Its ID <br>
