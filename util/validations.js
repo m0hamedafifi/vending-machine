@@ -53,9 +53,8 @@ exports.isRoleExists = (roleName) => {
 // Checking whether the amount is 5 or 10 or 20 or  50 or 100 only 
 exports.isValidDeposit= (amount) => {
   let validAmount=[5,10,20,50,100];
-  return validAmount.includes(amount);
+  return validAmount.includes(Number(amount));
 }
-
 
 // Checking whether the amount is a Number
 exports.checkIsNumber=(data)=>{

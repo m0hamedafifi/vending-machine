@@ -82,8 +82,15 @@ exports.validRegData = async (req, res, next) => {
 // check the deposit data for validations before adding it into database
 exports.checkDepositData = async (req, res, next) => {
   try {
-    const { deposit, role } = req.body;
+    const { deposit } = req.body;
 
+    // Check the deposit data is exist or not
+    if (!deposit) {
+      return res.status(422).send({
+        status: false,
+        message: "Please provide a valid deposit of money you want to add in your account.",
+      })
+    }
     // Check the deposit data is in number format or not
     if (validator.checkIsNumber(deposit)) {
       return res.status(400).send({
@@ -97,14 +104,6 @@ exports.checkDepositData = async (req, res, next) => {
       return res.status(400).send({
         status: false,
         message: "Invalid Deposit Amount it's accept 5,10,20,50,100 only",
-      });
-    }
-
-    // Checking role of user who is making a deposit
-    if (!role.includes("buyer")) {
-      return res.status(403).send({
-        status: false,
-        message: "You are not authorized to make this request",
       });
     }
 
@@ -134,5 +133,55 @@ exports.checkUser = async (req, res, next) => {
     return res
       .status(500)
       .send({ status: false, message: "Internal server error..." });
+  }
+};
+
+// check if the role is buyer
+exports.isBuyer = (req, res, next) => {
+  try {
+    // console.log(req.body);
+    const { role } = req.body;
+    if (!role.includes("buyer")) {
+      return res.status(401).send({
+        status: false,
+        message: "You are not authorized to perform this action",
+      });
+    }
+    next();
+  } catch (err) {
+    console.error("Error in is buyer MiddleWare", err.message);
+    res.status(500).send({
+      status: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+// check input data for buy transaction
+exports.checkBuyData = (req, res, next) => {
+  try {
+    let { productId, amount } = req.body;
+    // check if the product id is number not null and  is not empty
+    if (isNaN(productId) || !productId) {
+      return res.status(422).send({
+        status: false,
+        message: "Product Id must be a valid number.",
+      });
+    }
+    // check the amount is  numeric and not null or empty string
+    if (isNaN(amount) || !amount) {
+      return res.status(422).send({
+        status: false,
+        message: "Amount should be a valid number.",
+      });
+    }
+
+    next();
+  } catch (err) {
+    console.log("Error In Check Buy Data", err.message);
+    return res.status(500).json({
+      status: false,
+      message: "Internal Server Error",
+    });
   }
 };
