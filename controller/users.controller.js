@@ -1,8 +1,13 @@
 const User = require("../model/users.model");
-const util = require("../util/utility");
 const bcrypt = require("bcryptjs");
-const jwt = require("../Util/jwt.util");
+const jwt = require("../util/jwt.util");
+const util = require("../util/utility");
+const Logger = require("../services/logger");
 
+//----------------------------------------------------------------
+// add object from logger service methods and the filename
+//----------------------------------------------------------------
+const logger = new Logger("UserController");
 // ----------------------------------------------------------------
 //                        CRUD Operations
 // ----------------------------------------------------------------
@@ -33,11 +38,12 @@ exports.addNewUser = async (req, res) => {
       //role
       role: req.body.role ? req.body.role : "buyer",
     };
-    console.log(data);
+    // console.log(data);
 
     // check username is already exist or not already
     const userExistOrNot = await User.findOne({ userName: data.userName });
     if (userExistOrNot) {
+      logger.error(`Username ${data.userName} already exists.`);
       return res.status(409).send(`Username ${data.userName} already exists.`);
     }
 
@@ -51,9 +57,13 @@ exports.addNewUser = async (req, res) => {
       dataUser.userName,
       dataUser.role
     );
+    //add logger
 
+    logger.info(
+      `user : ${newUser.userName} has been added successfully!`,
+      dataUser
+    );
     // send response to client side
-
     return res
       .header("x-auth-token", token)
       .status(201)
@@ -63,7 +73,8 @@ exports.addNewUser = async (req, res) => {
         results: dataUser,
       });
   } catch (err) {
-    console.log("Error at new  user creation", err.message);
+    // console.log("Error at new  user creation", err.message);
+    logger.error(`Error at new  user creation ${err.message}`);
     return res.status(500).send({
       status: false,
       message: "Internal server error...!",
@@ -81,13 +92,15 @@ exports.getAllUsersList = async function (req, res) {
       userId: "asc",
       userName: "asc",
     });
+    logger.info(`"Successfully fetched the user list"`);
     return res.status(200).send({
       status: true,
       message: "Successfully fetched the user list",
       results: records,
     });
   } catch (err) {
-    console.log("Error in getting user list..!", err.message);
+    // console.log("Error in getting user list..!", err.message);
+    logger.error(`Error in getting user list..! ${err.message}`);
     return res.status(500).json({
       status: false,
       message: "Internal server error...!",
@@ -117,14 +130,17 @@ exports.getUserDetailsById = async function (req, res) {
 
     // If no user is found with the provided ID
     if (!record) {
+      logger.error("Couldn't find user details for given ID");
       return res.status(404).send({ status: false, message: "User not found" });
     }
 
+    logger.info("User details successfully retrieved by user id!", record);
     // If the user is found, send a successful response with user details
     return res.status(200).send({ status: true, results: record });
   } catch (err) {
     // Handle errors that may occur during the process
-    console.log("Error In Fetching The User Data", err);
+    // console.log("Error In Fetching The User Data", err.message);
+    logger.error(`Error in fetching user data : ${err.message}`);
     return res
       .status(500)
       .send({ status: false, message: "Internal Server Error...!" });
@@ -146,10 +162,12 @@ exports.getUserDetailsByUserName = async function (req, res) {
       }
     );
     if (!userData) {
+      logger.error(`User ${req.body.userName} does not exist`);
       return res
         .status(404)
         .json({ message: "No User Found With This Username." });
     }
+    logger.info("Successfully got user detail using user name.", userData);
     // If the user is found, send a successful response with user details
     return res.status(200).send({ status: true, results: userData });
   } catch {
@@ -165,6 +183,7 @@ exports.updateUserInfo = async function (req, res) {
     const id = req.params.id;
     const updateOps = req.body;
     if (!updateOps) {
+      logger.error(`Invalid payload to update user info.`);
       return res
         .status(400)
         .send({ status: false, message: "Please provide new data to update." });
@@ -186,16 +205,21 @@ exports.updateUserInfo = async function (req, res) {
       });
     }
     // console.log(user);
-    if (!user)
+    if (!user) {
+      logger.error(`No user with that ID or Username.`);
       return res
         .status(404)
-        .send({ status: false, message: "No user with that ID." });
-
+        .send({ status: false, message: "No user with that ID or username." });
+    }
+    logger.info("Successfully updated user info.", user);
     return res
       .status(200)
       .send({ status: true, data: "User has been updated successfully!" });
   } catch (err) {
-    console.log("Error in updating user info", err);
+    // console.log("Error in updating user info", err);
+    logger.error(
+      `Internal error occurred while updating user info : ${err.message}`
+    );
     return res
       .status(500)
       .send({ status: false, message: "Internal Server Error" });
@@ -220,15 +244,22 @@ exports.deleteUser = async function (req, res) {
       user = await User.findOneAndDelete({ userName: id });
     }
 
-    if (!user)
+    if (!user) {
+      logger.error(`User not found for deletion`);
       return res
         .status(404)
         .send({ status: false, message: "User Not Found!" });
-
+    }
+    logger.info(
+      `User deleted Successfully [${user.userId}] , [${user.userName}] `
+    );
     // Send success response
     res.status(200).send({ status: true, message: "User has been deleted!" });
   } catch (err) {
-    console.log("Error In Deleting The User", err);
+    // console.log("Error In Deleting The User", err);
+    logger.error(
+      `Internal error occurred while deleting the user : ${err.message}`
+    );
     return res
       .status(500)
       .json({ status: false, message: "Internal Server Error" });

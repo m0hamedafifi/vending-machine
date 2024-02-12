@@ -1,9 +1,13 @@
 var passwordValidator = require("password-validator");
 var passwordChecker = new passwordValidator();
+const Logger = require("../services/logger");
 
+//----------------------------------------------------------------
+// add new logger object to the utils module for logging purposes.
+//----------------------------------------------------------------
+const logger = new Logger("validationsUtility");
 
 // Password must be 10 characters long
-
 
 module.exports.isValidPassword = (password) => {
   // Add properties to the password validator
@@ -25,11 +29,11 @@ module.exports.isValidPassword = (password) => {
     // Validate the password against the passwordChecker
     return passwordChecker.validate(password);
   } catch (err) {
-    console.log("Error at validation  password function : " + err);
+    // console.log("Error at validation  password function : " + err);
+    logger.error(`Error at validation password function :- ${err.message}`);
     throw err;
   }
 };
-
 
 // check username
 exports.isValidUserName = (userName) => {
@@ -41,23 +45,19 @@ exports.isValidUserName = (userName) => {
   return true;
 };
 
-
-
-
-// check Role name 
+// check Role name
 exports.isRoleExists = (roleName) => {
-  const roles = ['seller', 'buyer'];
+  const roles = ["seller", "buyer"];
   return roles.includes(roleName);
-}
+};
 
-// Checking whether the amount is 5 or 10 or 20 or  50 or 100 only 
-exports.isValidDeposit= (amount) => {
-  let validAmount=[5,10,20,50,100];
+// Checking whether the amount is 5 or 10 or 20 or  50 or 100 only
+exports.isValidDeposit = (amount) => {
+  let validAmount = [5, 10, 20, 50, 100];
   return validAmount.includes(Number(amount));
-}
+};
 
 // Checking whether the amount is a Number
-exports.checkIsNumber=(data)=>{
+exports.checkIsNumber = (data) => {
   return isNaN(data);
-}
-
+};

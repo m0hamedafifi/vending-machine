@@ -1,6 +1,11 @@
 const User = require("../model/users.model");
 const Product = require("../model/products.model");
+const Logger = require("../services/logger");
 
+//----------------------------------------------------------------
+// add new logger object to the controller
+//----------------------------------------------------------------
+const logger = new Logger("buyController");
 // ----------------------------------------------------------------
 // Create Buy Order function
 // ----------------------------------------------------------------
@@ -13,20 +18,20 @@ exports.createBuyOrder = async (req, res) => {
     // check the product id is exist in database
     let productData = await Product.findOne({ productId: productId });
     if (!productData) {
+      logger.error("Product not found in database.");
       return res
-        .status(401)
+        .status(404)
         .send({ status: false, message: "The product does not exist" });
     }
 
     // check the amount is grater then the amount in database
     if (amount > productData.amountAvailable) {
-      return res
-        .status(403)
-        .send({
-          status: false,
-          message:
-            "Sorry! The available amount of this product is less than your order.",
-        });
+      logger.error(`Requested amount is greater than available amount.`);
+      return res.status(403).send({
+        status: false,
+        message:
+          "Sorry! The available amount of this product is less than your order.",
+      });
     }
 
     // get deposit money's for the user account
@@ -34,13 +39,12 @@ exports.createBuyOrder = async (req, res) => {
 
     // check the amount is grater then the amount in database
     if (userData.deposit == 0) {
-      return res
-        .status(403)
-        .send({
-          status: false,
-          message: "You don't have any deposit",
-          available_balance: userData.deposit,
-        });
+      logger.error("User has no deposit!");
+      return res.status(403).send({
+        status: false,
+        message: "You don't have any deposit",
+        available_balance: userData.deposit,
+      });
     }
 
     // calculate the cost of amount product
@@ -49,6 +53,7 @@ exports.createBuyOrder = async (req, res) => {
     // check the deposit with total cost and return the change in(5,10,20,50,100)
 
     if (totalCost > userData.deposit) {
+      logger.error("Deposit is greater than the total cost");
       return res.status(409).send({
         status: false,
         message:
@@ -76,6 +81,14 @@ exports.createBuyOrder = async (req, res) => {
       { new: true }
     );
 
+    logger.info(`User ${userId} bought a product`, {
+      product_id: productData.productId,
+      product_Name: productData.productName,
+      amount: amount,
+      cost_per_Product: productData.cost,
+      total_cost: totalCost,
+      change: changeMoney,
+    });
     // return to the checkout page with success massage and the change that will give back to customer
     return res.status(200).send({
       status: true,
@@ -90,7 +103,8 @@ exports.createBuyOrder = async (req, res) => {
       },
     });
   } catch (err) {
-    console.log("Error from buyProductController", err.message);
+    // console.log("Error from buyProductController", err.message);
+    logger.error(`Error from buyProductController ${err.message}`);
     return res
       .status(500)
       .send({ status: false, message: "Internal server error" });

@@ -1,5 +1,11 @@
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
+const Logger = require("../services/logger");
+
+//----------------------------------------------------------------
+// add new logger object to the utils module for logging purposes.
+//----------------------------------------------------------------
+const logger = new Logger("jwtUtility");
 
 // Setup environment variables from .env file.
 dotenv.config();
@@ -19,7 +25,8 @@ exports.VerifyTokenUser = (token)=>{
         let user=jwt.verify(token,process.env.JWT_SECRET);
         return user;
         }catch(err){
-            console.log("Invalid token",err.message);
+            // console.log("Invalid token",err.message);
+            logger.error(`Invalid token ${token} - ${err.message}`);
             return false;
             }
 };
