@@ -119,7 +119,7 @@ exports.getUserDetailsById = async function (req, res) {
 
     // Use findOne to find a user by ID and project only selected fields
     let record = await User.findOne(
-      { $or: [{ userId: id }, { userName: id }] },
+      { userId: id },
       {
         userName: 1,
         deposit: 1,

@@ -18,6 +18,9 @@ router.get("/users", usersController.getAllUsersList);
 // Get specific user by id
 router.get("/users/:id", usersController.getUserDetailsById);
 
+// get data to my account
+router.get('/users/me', authMW.authenticateUser , usersController.getUserDetailsByUserName)
+
 // Update existing user
 router.put("/users/:id",authMW.authenticateUser, validator.checkUser,validator.checkDepositUser,usersController.updateUserInfo);
 
