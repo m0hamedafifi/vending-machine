@@ -12,26 +12,21 @@ const logger = new Logger("validationsUtility");
 module.exports.isValidPassword = (password) => {
   // Add properties to the password validator
   passwordChecker
-    .is()
-    .min(6) // Minimum length 6
-    .is()
-    .max(20) // Maximum length 20
-    .has()
-    .uppercase() // At least one uppercase letter
-    .lowercase() // At least one lowercase letter
-    .digits() // At least one digit
-    .not()
-    .spaces() // Should not contain spaces
-    .is()
-    .not()
-    .oneOf(["Passw0rd", "Password123"]); // Blacklist these values
+    .is().min(6) // Minimum length 6
+    .is().max(20) // Maximum length 20
+    .has().uppercase() // At least one uppercase letter
+    .has().lowercase() // At least one lowercase letter
+    .has().digits() // At least one digit
+    .not().spaces() // Should not contain spaces
+    .is().not().oneOf(["Passw0rd", "Password123"]); // Blacklist these values
   try {
     // Validate the password against the passwordChecker
-    return passwordChecker.validate(password);
+    let result = passwordChecker.validate(password, { details: true });
+    return result;
   } catch (err) {
-    // console.log("Error at validation  password function : " + err);
-    logger.error(`Error at validation password function :- ${err.message}`);
-    throw err;
+    // console.log("Error at validation  password : " + err);
+    logger.error(`Error at validation of password : ${err.message}`);
+    return false;
   }
 };
 

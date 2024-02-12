@@ -143,11 +143,12 @@ exports.checkDepositData = async (req, res, next) => {
 
 exports.checkDepositUser = async (req, res, next) => {
   try {
-    const { deposit } = req.body;
+    let deposit  = req.body.deposit;
 
     // Check the deposit data is exist or not
     if (!deposit) {
       next();
+      return;
     }
     // Check the deposit data is in number format or not
     if (validator.checkIsNumber(deposit)) {
